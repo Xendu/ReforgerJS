@@ -135,10 +135,11 @@ class ServerStatus {
       }
   
       if (pluginConfig.discordBotStatus && this.discordClient?.user) {
-        this.discordClient.user.setActivity(
-          `📢${playerCount} Players | ${fps} FPS`,
-          { type: ActivityType.Watching }
-        );
+        this.discordClient.user.setActivity({
+          type: ActivityType.Custom,
+          name: `📢${playerCount} Players | ${fps} FPS`,
+          state: `📢${playerCount} Players | ${fps} FPS`,
+        });
       }
   
     } catch (error) {
