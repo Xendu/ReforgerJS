@@ -92,14 +92,14 @@ class ServerStatus {
 
   async updateEmbed() {
     try {
-      const pluginConfig = this.config.plugins.find(plugin => plugin.plugin === "ServerStatus");
+      const pluginConfig = this.config.plugins.find(p => p.plugin === "ServerStatus");
       const embedConfig = pluginConfig.embed || {};
       const serverName = this.config.server?.name || "Unknown";
-
+  
       const playerCount = global.serverPlayerCount || 0;
       const fps = global.serverFPS || 0;
       const memoryUsageMB = ((global.serverMemoryUsage || 0) / 1024).toFixed(2);
-
+  
       const embed = new EmbedBuilder()
         .setTitle(embedConfig.title || "Server Status")
         .setColor(embedConfig.color || "#00FF00")
@@ -110,20 +110,31 @@ class ServerStatus {
           { name: "FPS", value: `${fps}`, inline: true },
           { name: "Memory Usage", value: `${memoryUsageMB} MB`, inline: true }
         );
-
+  
       if (embedConfig.footer) embed.setFooter({ text: embedConfig.footer });
       if (embedConfig.thumbnailURL?.trim()) embed.setThumbnail(embedConfig.thumbnailURL);
-
-      await this.message.edit({ embeds: [embed] });
-
-      if (pluginConfig.discordBotStatus && this.discordClient?.user) {
-        this.discordClient.user.setActivity({
-          type: ActivityType.Custom,
-          name: `📢${playerCount} Players | ${fps} FPS`,
-          state: `📢${playerCount} Players | ${fps} FPS`,
-        });
+  
+      if (!this.message) {
+        console.warn("[ServerStatus] No message found, reposting embed...");
+        this.message = await this.postInitialEmbed();
       }
-    } catch (error) {}
+  
+      if (this.message?.editable) {
+        await this.message.edit({ embeds: [embed] });
+      } else {
+        console.warn("[ServerStatus] Message is not editable.");
+      }
+  
+      if (pluginConfig.discordBotStatus && this.discordClient?.user) {
+        this.discordClient.user.setActivity(
+          `📢${playerCount} Players | ${fps} FPS`,
+          { type: ActivityType.Watching }
+        );
+      }
+  
+    } catch (error) {
+      console.error("[ServerStatus] Failed to update embed or activity:", error);
+    }
   }
 
   async cleanup() {
