@@ -114,7 +114,14 @@ class ServerStatus {
         );
   
       if (embedConfig.footer) embed.setFooter({ text: embedConfig.footer });
-      if (embedConfig.thumbnailURL?.trim()) embed.setThumbnail(embedConfig.thumbnailURL);
+      if (embedConfig.thumbnailURL?.trim()) {
+        try {
+          new URL(embedConfig.thumbnailURL); // throws if invalid
+          embed.setThumbnail(embedConfig.thumbnailURL);
+        } catch {
+          console.warn("[ServerStatus] Invalid thumbnail URL. Skipping...");
+        }
+      }
   
       if (!this.message) {
         console.warn("[ServerStatus] No message found, reposting embed...");
