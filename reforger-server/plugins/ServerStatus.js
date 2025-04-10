@@ -114,14 +114,7 @@ class ServerStatus {
         );
   
       if (embedConfig.footer) embed.setFooter({ text: embedConfig.footer });
-      if (embedConfig.thumbnailURL?.trim()) {
-        try {
-          new URL(embedConfig.thumbnailURL); // throws if invalid
-          embed.setThumbnail(embedConfig.thumbnailURL);
-        } catch {
-          console.warn("[ServerStatus] Invalid thumbnail URL. Skipping...");
-        }
-      }
+      if (embedConfig.thumbnailURL?.trim()) embed.setThumbnail(embedConfig.thumbnailURL);
   
       if (!this.message) {
         console.warn("[ServerStatus] No message found, reposting embed...");
@@ -137,8 +130,8 @@ class ServerStatus {
       if (pluginConfig.discordBotStatus && this.discordClient?.user) {
         this.discordClient.user.setActivity({
           type: ActivityType.Custom,
-          name: `📢${playerCount} Players | ${fps} FPS`,
-          state: `📢${playerCount} Players | ${fps} FPS`,
+          name: `📢 ${playerCount} Players | ${fps} FPS`,
+          state: `📢 ${playerCount} Players | ${fps} FPS`,
         });
       }
   
