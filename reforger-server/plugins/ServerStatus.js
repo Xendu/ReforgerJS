@@ -50,7 +50,9 @@ class ServerStatus {
 
       this.interval = setInterval(() => this.updateEmbed(), (pluginConfig.interval || 1) * 60 * 1000);
       this.isInitialized = true;
-    } catch (error) {}
+    } catch (error) {
+      console.error("[ServerStatus] Error during prepareToMount:", error);
+    }
   }
 
   async postInitialEmbed() {
