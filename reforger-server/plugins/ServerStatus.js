@@ -85,8 +85,18 @@ class ServerStatus {
       
       // Only set thumbnail if thumbnail is not explicitly set to false and a URL is provided
       if (embedConfig.thumbnail !== false && embedConfig.thumbnailURL?.trim()) {
-        logger.verbose(`ServerStatus plugin: Setting thumbnail to ${embedConfig.thumbnailURL}`);
-        embed.setThumbnail(embedConfig.thumbnailURL);
+        try {
+          // Basic URL validation using regex
+          const urlPattern = /^(https?:\/\/)([\w-]+(\.[\w-]+)+|localhost)([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$/;
+          if (!urlPattern.test(embedConfig.thumbnailURL)) {
+            logger.warn(`ServerStatus plugin: Invalid thumbnail URL format: ${embedConfig.thumbnailURL}`);
+          } else {
+            logger.verbose(`ServerStatus plugin: Setting thumbnail to ${embedConfig.thumbnailURL}`);
+            embed.setThumbnail(embedConfig.thumbnailURL);
+          }
+        } catch (error) {
+          logger.error(`ServerStatus plugin: Error setting thumbnail: ${error.message}`);
+        }
       } else {
         logger.verbose(`ServerStatus plugin: Thumbnail is disabled or URL not provided`);
       }
@@ -138,8 +148,18 @@ class ServerStatus {
       
       // Only set thumbnail if thumbnail is not explicitly set to false and a URL is provided
       if (embedConfig.thumbnail !== false && embedConfig.thumbnailURL?.trim()) {
-        logger.verbose(`ServerStatus plugin: Setting thumbnail to ${embedConfig.thumbnailURL}`);
-        embed.setThumbnail(embedConfig.thumbnailURL);
+        try {
+          // Basic URL validation using regex
+          const urlPattern = /^(https?:\/\/)([\w-]+(\.[\w-]+)+|localhost)([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$/;
+          if (!urlPattern.test(embedConfig.thumbnailURL)) {
+            logger.warn(`ServerStatus plugin: Invalid thumbnail URL format: ${embedConfig.thumbnailURL}`);
+          } else {
+            logger.verbose(`ServerStatus plugin: Setting thumbnail to ${embedConfig.thumbnailURL}`);
+            embed.setThumbnail(embedConfig.thumbnailURL);
+          }
+        } catch (error) {
+          logger.error(`ServerStatus plugin: Error setting thumbnail: ${error.message}`);
+        }
       }
 
       await this.message.edit({ embeds: [embed] });
