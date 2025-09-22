@@ -6,6 +6,7 @@
     "queryPort": 1111,
     "rconPort": 1111,
     "rconPassword": "PASSWORD",
+    "reloadCommandsOnStartup": true,
     "logReaderMode": "tail",
     "filename": "console.log",
     "backfill": true,
@@ -23,6 +24,8 @@
       "password": "FTP Password"
     }
   },
+  "customParsers": {
+  },
   "consoleLogLevel": "info",
   "outputLogLevel": "info",
   "connectors": {
@@ -39,6 +42,13 @@
       "password": "password",
       "database": "reforgerjs",
       "dialect": "mysql"
+    },
+    "battlemetrics": {
+      "enabled": true,
+      "orgID": "Your Org ID",
+      "serverID": "Your Server ID",
+      "token": "Your BattleMetrics API Token",
+      "listID": "Your Ban List ID"
     }
   },
   "roles": {
@@ -48,16 +58,9 @@
     "roleName3": "discord RoleID"
   },
   "roleLevels": {
-    "1": [
-      "roleName",
-      "roleName1"
-    ],
-    "2": [
-      "roleName2"
-    ],
-    "3": [
-      "roleName3"
-    ]
+    "1": ["roleName", "roleName1"],
+    "2": ["roleName2"],
+    "3": ["roleName3"]
   },
   "commands": [
     {
@@ -69,16 +72,27 @@
       "command": "stats",
       "enabled": false,
       "commandLevel": 3,
-      "statsTable": ""
+      "servers": 1,
+      "statsTable": "Same_as_DBLogStats_Plugin"
+    },
+    {
+      "command": "voteinfo",
+      "commandLevel": 3,
+      "enabled": false
     },
     {
       "command": "rcon",
-      "enabled": true,
+      "enabled": false,
       "commandLevel": 3,
       "ban": 3,
       "shutdown": 3,
       "restart": 3,
       "kick": 3
+    },
+    {
+      "command": "reload",
+      "enabled": false,
+      "commandLevel": 1
     }
   ],
   "plugins": [
@@ -96,6 +110,10 @@
       "plugin": "DBLog",
       "enabled": false,
       "interval": 5
+    },
+    {
+      "plugin": "VoteLogs",
+      "enabled": false
     },
     {
       "plugin": "DBLogStats",
@@ -128,12 +146,17 @@
       "showMemoryUsage": false,
       "discordBotStatus": true,
       "embed": {
-          "title": "Arma Reforger Server Status",
-          "color": "#00FF00",
-          "footer": "ReforgerJS",
-          "thumbnail": false,
-          "thumbnailURL": "https://IMAGE_URL_HERE.png"
+        "title": "Arma Reforger Server Status",
+        "color": "#00FF00",
+        "footer": "ReforgerJS",
+        "thumbnail": false,
+        "thumbnailURL": "https://IMAGE_URL_HERE.png"
       }
     }
-  ]
+  ],
+  "github": {
+    "owner": "ZSU-GG-Reforger",
+    "repo": "ReforgerJS"
+  }
 }
+

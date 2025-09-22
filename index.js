@@ -6,6 +6,8 @@ const { printLogo } = require('./reforger-server/utils/logo');
 const { validateConfig, performStartupChecks } = require('./reforger-server/factory');
 const { loadPlugins, mountPlugins } = require('./reforger-server/pluginLoader');
 const logger = require('./reforger-server/logger/logger');
+const deployCommands = require('./deploy-commands');
+const { checkVersion } = require('./reforger-server/utils/versionChecker');
 
 function loadConfig(filePath) {
     try {
@@ -39,6 +41,24 @@ async function main() {
 
         // 3) Perform startup checks and get the Discord client
         const discordClient = await performStartupChecks(config);
+        
+        const githubOwner = config.github?.owner || 'ZSU-GG-Reforger';
+        const githubRepo = config.github?.repo || 'ReforgerJS';
+        
+        await checkVersion(githubOwner, githubRepo, logger);
+
+        // 3.5) Reload Discord commands if configured
+        if (config.server && config.server.reloadCommandsOnStartup === true) {
+            logger.info('Reloading Discord commands on startup (reloadCommandsOnStartup=true)...');
+            const success = await deployCommands(config, logger, discordClient);
+            if (success) {
+                logger.info('Discord commands successfully reloaded.');
+            } else {
+                logger.warn('Failed to reload Discord commands. Bot will continue with existing commands.');
+            }
+        } else {
+            logger.verbose('Skipping command reload on startup (reloadCommandsOnStartup is disabled).');
+        }
 
         // 4) Create and initialize ReforgerServer
         const ReforgerServer = require('./reforger-server/main');
@@ -51,6 +71,7 @@ async function main() {
 
         // 6) Mount plugins with the server instance and Discord client
         await mountPlugins(loadedPlugins, serverInstance, discordClient);
+        global.currentPlugins = loadedPlugins;
 
         // 7) Load and initialize CommandHandler
         const CommandHandler = require('./reforger-server/commandHandler');
@@ -61,18 +82,15 @@ async function main() {
         discordClient.on('interactionCreate', async (interaction) => {
             try {
                 if (interaction.isCommand()) {
-                    // Modified: Extract all command data to pass to the handler
                     const commandName = interaction.commandName;
                     const extraData = {};
                     
-                    // Get all options from the interaction
                     if (interaction.options && interaction.options._hoistedOptions) {
                         interaction.options._hoistedOptions.forEach(option => {
                             extraData[option.name] = option.value;
                         });
                     }
                     
-                    // Handle the command with all the extracted data
                     await commandHandler.handleCommand(interaction, extraData);
                 }
             } catch (error) {

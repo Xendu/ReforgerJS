@@ -2,8 +2,8 @@ const { SlashCommandBuilder } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('stats')
-        .setDescription('Retrieve player statistics by UUID or name')
+        .setName('messagehistory')
+        .setDescription('Retrieve player chat message history from RJS by UUID or name')
         .addStringOption(option =>
             option
                 .setName('identifier')
